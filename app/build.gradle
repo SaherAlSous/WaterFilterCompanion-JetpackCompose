@@ -65,7 +65,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.0.0-rc01"
 
     //updating the preview without recompiling
-    implementation "androidx.compose.ui:ui-tooling:1.0.0-rc01"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.0.0-beta09"
 
     //Hilt --> https://dagger.dev/hilt/gradle-setup
     implementation 'com.google.dagger:hilt-android:2.37'

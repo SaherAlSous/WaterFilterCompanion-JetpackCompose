@@ -1,12 +1,19 @@
 package com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.ringindicator
 
 import android.util.Log
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -16,6 +23,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.UiMode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
@@ -26,7 +36,8 @@ private val fgStrokeWithDp: Dp = 12.dp
 private const val TAG = "Ring"
 
 /**
- * for more info: https://developer.android.com/jetpack/compose/graphics
+ * for more info about graphics: https://developer.android.com/jetpack/compose/graphics
+ * for more info about animation: https://developer.android.com/jetpack/compose/animation
  */
 
 @Composable
@@ -34,7 +45,8 @@ fun Ring(
     modifier: Modifier = Modifier, //exposing the modifier, therefore we may access it from the function call.
     bgColor: Color,
     fgColor: Color,
-    fill: Float) {
+    fill: Float
+) {
 
     /**
      * We want to convert the [dp] to pixels, therefore we have
@@ -45,16 +57,17 @@ fun Ring(
      */
     var bgStroke: Stroke
     var fgStroke: Stroke
-    with(LocalDensity.current){
-        bgStroke= remember {
-            Log.d(TAG,"bulding background stroke")
+    with(LocalDensity.current) {
+        bgStroke = remember {
+            Log.d(TAG, "bulding background stroke")
             Stroke(width = bgStrokeWithDp.toPx())
         }
-        fgStroke= remember {
+        fgStroke = remember {
             Log.d(TAG, "builing foreground stroke")
             Stroke(
                 fgStrokeWithDp.toPx(),
-                cap = StrokeCap.Round)
+                cap = StrokeCap.Round
+            )
         }
     }
 
@@ -81,9 +94,10 @@ fun Ring(
      * Using [fill] parameter, will allow the app to recalculate the value and display
      * the new one, instead of sending back the same old value.
      */
-    val fgRingAngleEdge = remember(fill) {
-        180.0f * fill
-    }
+//    val fgRingAngleEdge = remember(fill) { // we changed this value so that we can create another one for animation
+//        180.0f * fill
+//    }
+
 
     /**
      * We want to be sure that both Rings have the same line/[Stroke] size.
@@ -95,7 +109,57 @@ fun Ring(
         max(bgStroke.width, fgStroke.width)
     }
 
+    /**
+     * We are creating a [transitionState] value to apply animations, using [TransitionState] enum class
+     */
+    val transitionState = remember {
+        MutableTransitionState(TransitionState.INIT_START)
+    }
 
+    /**
+     * We will create the transition itself by using [updateTransition] to call
+     * the [transitionState] - video 7
+     */
+    val transition = updateTransition(
+        transitionState = transitionState,
+        label = "ring-anim-transition"
+    )
+
+    /**
+     * To start the animation, we need to delegate it to [transition] [animateFloat] - video 7
+     */
+    val bgRingAngelEdge by transition.animateFloat(
+        transitionSpec = {
+            tween(
+                durationMillis = 500,
+                delayMillis = 500
+            )
+        },
+        label = "bgRingAngelEdge"
+    ) { currentState ->
+        if (currentState == TransitionState.INIT_START) 0f else 180f
+    }
+
+    val fgRingAngleEdge by transition.animateFloat(
+        transitionSpec = {
+            tween(
+                durationMillis = 500
+            )
+        },
+        label = "fgRingAngleEdge"
+    ) { currentState ->
+        if (currentState == TransitionState.FILLED) 180f * fill else 0f
+    }
+
+    /**
+     * to start the animation we have to use [LaunchedEffect] method
+     */
+    LaunchedEffect(key1 = transitionState.currentState) {
+        transitionState.targetState = when (transitionState.currentState) {
+            TransitionState.INIT_START -> TransitionState.INIT_END
+            else -> TransitionState.FILLED
+        }
+    }
 
     Canvas(
         modifier
@@ -139,8 +203,8 @@ fun Ring(
         drawRing(
             //Background Rind
             color = bgColor,
-            startAngle = 0.0f,
-            endAngle = 360.0f,
+            startAngle = -bgRingAngelEdge, // we changed the values here to apply the animation on the stroke
+            endAngle = bgRingAngelEdge,
             style = bgStroke,
             size = arcSize,
             topLeft = topLeft,
@@ -179,4 +243,14 @@ private fun DrawScope.drawRing(
         size = size,
         style = style
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun previewRing() {
+    Ring(
+        modifier = Modifier.size(300.dp),
+        fill =0.8f,
+        bgColor =Color.DarkGray,
+        fgColor = Color.Cyan)
 }
