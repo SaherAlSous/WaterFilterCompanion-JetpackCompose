@@ -67,6 +67,9 @@ dependencies {
     //updating the preview without recompiling
     implementation "androidx.compose.ui:ui-tooling-preview:1.0.0-beta09"
 
+    //Constraint layout compose
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08'
+
     //Hilt --> https://dagger.dev/hilt/gradle-setup
     implementation 'com.google.dagger:hilt-android:2.37'
     kapt 'com.google.dagger:hilt-compiler:2.37'

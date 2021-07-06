@@ -45,7 +45,13 @@ fun Ring(
     modifier: Modifier = Modifier, //exposing the modifier, therefore we may access it from the function call.
     bgColor: Color,
     fgColor: Color,
-    fill: Float
+    fill: Float,
+    /**
+     * In order to synchronize the foreground ring animation with the percentage text
+     * displayed in the [RingIndicator] which is the parent of the [Ring] itself, we want to expose a way -> in which
+     * the ring can pass a value to the outside. so for that we want to use a Callback.
+     */
+    fgFillCb: ((Float) -> Unit)? = null
 ) {
 
     /**
@@ -152,6 +158,26 @@ fun Ring(
     }
 
     /**
+     * Creating an animation for the stats text on start as the with the ring
+     */
+
+    val fgFill by transition.animateFloat (
+        transitionSpec = {
+            tween(400)
+        },
+        label = "fgFill"
+            ){currentState ->
+        if (currentState == TransitionState.FILLED) fill else 0f
+    }
+    /**
+     * We will use this [LaunchedEffect] to send the value of the [fgFillCb]
+     */
+    LaunchedEffect(fgFill){
+        fgFillCb?.invoke(fgFill)
+    }
+
+
+    /**
      * to start the animation we have to use [LaunchedEffect] method
      */
     LaunchedEffect(key1 = transitionState.currentState) {
@@ -163,8 +189,6 @@ fun Ring(
 
     Canvas(
         modifier
-            .fillMaxWidth()
-            .height(300.dp)
 //            .border(
 //                width = 1.dp,
 //                color = Color.Red
@@ -245,6 +269,10 @@ private fun DrawScope.drawRing(
     )
 }
 
+/**
+ * this to allow me to see a preview in the split screen
+ * but the alpha version of the library is not working well.
+ */
 @Preview(showBackground = true)
 @Composable
 fun previewRing() {
