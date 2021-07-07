@@ -1,5 +1,6 @@
 package com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.detailscard.content.item
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material.MaterialTheme
@@ -7,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.sp
 
 /**
@@ -17,7 +19,10 @@ import androidx.compose.ui.unit.sp
 fun DetailsContentItem(
     modifier: Modifier = Modifier,
     value: String,
-    label: String
+    candidateValue: String,
+    label: String,
+    editmode: Boolean,
+    onClick:() -> Unit
 ){
     Column(modifier) {
         val itemModifier = Modifier
@@ -25,8 +30,12 @@ fun DetailsContentItem(
                 Alignment.CenterHorizontally
             )
         DetailsContentTextItemValue(
-            value = value,
-            modifier = itemModifier
+            value = if (editmode) candidateValue else value,
+            modifier = itemModifier.clickable (
+                enabled = editmode,
+                role = Role.Button,
+                onClick = onClick
+                    )
         )
         DetailsContentItemLabel(
             label = label,

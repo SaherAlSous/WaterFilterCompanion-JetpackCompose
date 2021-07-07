@@ -73,4 +73,7 @@ dependencies {
     //Hilt --> https://dagger.dev/hilt/gradle-setup
     implementation 'com.google.dagger:hilt-android:2.37'
     kapt 'com.google.dagger:hilt-compiler:2.37'
+
+    //Datepicker Dialog: https://github.com/afollestad/material-dialogs
+    implementation 'com.afollestad.material-dialogs:datetime:3.3.0'
 }

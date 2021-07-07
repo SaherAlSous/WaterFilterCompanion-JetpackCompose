@@ -23,7 +23,14 @@
     <string name="details_card_save">Save</string>
 
     <!-- These strings are in Details Content and they accept Ints-->
-    <string name="details_card_total_format">%d L</string>
-    <string name="details_card_remaining_format">%d L</string>
+    <string name="details_card_total_format">%s L</string>
+    <string name="details_card_remaining_format">%s L</string>
+
+    <!-- Capacity Input Dialogs -->
+    <string name="capacity_input_dialog_total_title">Input Capacity (L)</string>
+    <string name="capacity_input_dialog_remaining_title">Input Capacity (L)</string>
+    <string name="capacity_input_dialog_cancel">Cancel</string>
+    <string name="capacity_input_dialog_submit">Submit</string>
+
 
 </resources>

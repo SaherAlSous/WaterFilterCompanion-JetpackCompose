@@ -20,14 +20,25 @@ import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.detai
 fun DetailsCard(
     modifier: Modifier = Modifier,
     editMode: Boolean,
+
+    //Total Capacity
     totalCapacity: Int?,
+    onTotalCapacityClick: () -> Unit,
+    totalCapacityCandidate: String?,
+    //Remaining Capacity
     remainingCapacity: Int?,
+    onRemainingCapacityClick: () -> Unit,
+    remainingCapacityCandidate: String?,
+    //Installed on
     installOnFormatted: String?,
+    onInstallOnFormatted: ()-> Unit,
+    installedOnCandidateFormatted: String?,
+
     // Callbacks
     onEdit:() -> Unit,
     onClearData:() -> Unit,
     onCancel:() -> Unit,
-    onSave:() -> Unit
+    onSave:() -> Unit,
 ) {
   Card(
       modifier
@@ -36,8 +47,18 @@ fun DetailsCard(
           //Details Content
           DetailsContent(
               totalCapacity = totalCapacity,
+              onTotalCapacityClick= onTotalCapacityClick,
+              totalCapacityCandidate = totalCapacityCandidate,
+
               remainingCapacity = remainingCapacity,
-              installOnFormatted = installOnFormatted
+              onRemainingCapacityClick = onRemainingCapacityClick,
+              remainingCapacityCandidate = remainingCapacityCandidate,
+
+              installOnFormatted = installOnFormatted,
+              onInstallOnFormatted = onInstallOnFormatted,
+              installedOnCandidateFormatted = installedOnCandidateFormatted,
+
+              editMode = editMode
           )
           //Details Actions
           DetailsActions(

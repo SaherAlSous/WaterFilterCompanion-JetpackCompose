@@ -14,9 +14,23 @@ import com.saher.android.waterfiltercompanion_jetpackcompose.ui.utils.stringwith
 @Composable
 fun DetailsContent(
     modifier: Modifier = Modifier,
+    //Total Capacity
     totalCapacity: Int?,
+    onTotalCapacityClick: () -> Unit,
+    totalCapacityCandidate: String?,
+
+    //Remaining Capacity
     remainingCapacity: Int?,
-    installOnFormatted: String?
+    onRemainingCapacityClick: () -> Unit,
+    remainingCapacityCandidate: String?,
+
+    //Installed on
+    installOnFormatted: String?,
+    onInstallOnFormatted: ()-> Unit,
+    installedOnCandidateFormatted: String?,
+
+    //Editmode Boolean
+    editMode: Boolean
 ) {
     Row(
         modifier
@@ -43,9 +57,12 @@ fun DetailsContent(
          */
         val boxModifier = Modifier.weight(1f) // to align them equally inside the [Row]
         DetailsContentItem(
-            value = stringResourceWithFallback(R.string.details_card_total_format, totalCapacity),//<-- We are using the null check function
+            value = stringResourceWithFallback(R.string.details_card_total_format, totalCapacity?.toString()),//<-- We are using the null check function
+            candidateValue = stringResourceWithFallback(R.string.details_card_total_format,totalCapacityCandidate),
             label = stringResource(R.string.details_card_total_label),
-            modifier = boxModifier
+            modifier = boxModifier,
+            onClick = onTotalCapacityClick,
+            editmode = editMode
         )
 
         Divider(
@@ -54,9 +71,12 @@ fun DetailsContent(
                 .width(1.dp))
 
         DetailsContentItem(
-            value = stringResourceWithFallback(R.string.details_card_remaining_format, remainingCapacity), //<-- We are using the null check function
+            value = stringResourceWithFallback(R.string.details_card_remaining_format, remainingCapacity?.toString()), //<-- We are using the null check function
+            candidateValue = stringResourceWithFallback(R.string.details_card_remaining_format,remainingCapacityCandidate),
             label = stringResource(R.string.details_card_remaining_label),
-            modifier = boxModifier
+            modifier = boxModifier,
+            onClick = onRemainingCapacityClick,
+            editmode = editMode
         )
 
         Divider(
@@ -66,8 +86,11 @@ fun DetailsContent(
 
         DetailsContentItem(
             value = stringwithFallback(installOnFormatted) ,//<-- We are using the null check function
+            candidateValue = stringwithFallback(installedOnCandidateFormatted),
             label = stringResource(R.string.details_card_installed_on_label),
-            modifier = boxModifier
+            modifier = boxModifier,
+            onClick = onInstallOnFormatted,
+            editmode = editMode
         )
     }
 }
