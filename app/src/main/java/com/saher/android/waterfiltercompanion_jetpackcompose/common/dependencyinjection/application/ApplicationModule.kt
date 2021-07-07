@@ -6,7 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import com.saher.android.waterfiltercompanion_jetpackcompose.Application
+import com.saher.android.waterfiltercompanion_jetpackcompose.common.date.DateHelper
 import com.saher.android.waterfiltercompanion_jetpackcompose.common.dependencyinjection.DiConstants
+import dagger.Reusable
 import javax.inject.Named
 
 @Module
@@ -16,5 +18,9 @@ class ApplicationModule {
     @Provides
     @Named(DiConstants.APPLICATION_CONTEXT)
     fun provideApplicationContext(application: Application): Context = application
+
+    @Provides
+    @Reusable
+    fun provideDateHelper() = DateHelper()
 
 }

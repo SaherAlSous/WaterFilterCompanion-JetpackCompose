@@ -32,26 +32,23 @@ fun MainScreen(viewModel: MainViewModel) {
                 Modifier
                     .fillMaxWidth()
                     .height(300.dp), // we defined the height of this section on screen.
-                fill=0.9f,
-                daysInUse = null) // added the default values.
+                fill=viewModel.waterFill,
+                daysInUse = viewModel.daysInUse) // added the default values.
                 DetailsCard(
                     modifier =
                     Modifier
                         .padding(
                         top = 0.dp),
-                    editMode = true,
-                    totalCapacity = null,
-                    remainingCapacity = null,
-                    installOnFormatted = null,
-                    onEdit = { log("onEdit")},
-                    onClearData = { log("onClearData")},
-                    onCancel ={ log("onCancel")},
-                    onSave = {log("onSave")}
+                    editMode = viewModel.editMode,
+                    totalCapacity = viewModel.totalCapacity,
+                    remainingCapacity = viewModel.remainingCapacity,
+                    installOnFormatted = viewModel.installedOnFormatted,
+                    onEdit = viewModel::onEdit,
+                    onClearData = viewModel::onClearData,
+                    onCancel =viewModel::onCancel,
+                    onSave = viewModel::onSave
                 )
             }
         }
     }
-}
-private fun log(string: String){
-    Log.d("MainScreen", string)
 }
