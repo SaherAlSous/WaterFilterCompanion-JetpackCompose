@@ -32,5 +32,12 @@
     <string name="capacity_input_dialog_cancel">Cancel</string>
     <string name="capacity_input_dialog_submit">Submit</string>
 
+    <!-- Confirmation Dialog-->
+    <string name="confirmation_dialog_confirm">Confirm</string>
+    <string name="confirmation_dialog_cancel">Cancel</string>
+
+    <!-- Clear Data Confirmation -->
+    <string name="clear_data_confirmation_dialog_title">Clear Data?</string>
+
 
 </resources>

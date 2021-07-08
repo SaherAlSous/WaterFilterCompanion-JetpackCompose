@@ -76,4 +76,7 @@ dependencies {
 
     //Datepicker Dialog: https://github.com/afollestad/material-dialogs
     implementation 'com.afollestad.material-dialogs:datetime:3.3.0'
+
+    //shared preferences
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 }

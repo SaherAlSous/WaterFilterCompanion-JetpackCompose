@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.capacityInputdialog.CapacityInputDialog
+import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.confirmationdialog.ConfirmationDialog
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.detailscard.DetailsCard
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.ringindicator.RingIndicator
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.theme.WaterFilterCompanionJetpackComposeTheme
@@ -63,7 +64,9 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSave = viewModel::onSave
                 )
             }
+            //Implementing Dialogs
             CapacityInputDialog(config = viewModel.capacityInputDialogConfig)
+            ConfirmationDialog(config = viewModel.confirmationDialogConfig)
         }
     }
 }

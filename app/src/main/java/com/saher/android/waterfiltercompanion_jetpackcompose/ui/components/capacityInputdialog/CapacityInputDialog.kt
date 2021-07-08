@@ -1,6 +1,7 @@
 package com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.capacityInputdialog
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +66,11 @@ AlertDialog(
 
                 keyboardOptions = KeyboardOptions( //definging the content we want to insert in the field as numbers only.
                     autoCorrect = false,
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done //using the (tick) button on keyboard to submit the data
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { onSubmit(input, config) }
                 )
             )
         }
@@ -91,7 +97,7 @@ AlertDialog(
                 )
             }
             TextButton(
-                onClick = { config.onSubmit(input) },
+                onClick = { onSubmit(input, config) },
             modifier = buttonModifier) {
                 Text(
                     text =  stringResource(R.string.capacity_input_dialog_submit).uppercase()
@@ -99,6 +105,13 @@ AlertDialog(
             }
         }
     })
+}
+
+/**
+ * this function is to check data entered by keyboard that it is not empty
+ */
+private fun onSubmit(input: String, config: CapacityInputDialogConfig){
+    if (input.isNotEmpty()) config.onSubmit(input)
 }
 
  /**

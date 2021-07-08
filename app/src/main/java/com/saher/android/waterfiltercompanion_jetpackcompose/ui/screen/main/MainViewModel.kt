@@ -1,6 +1,5 @@
 package com.saher.android.waterfiltercompanion_jetpackcompose.ui.screen.main
 
-import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,17 +8,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.saher.android.waterfiltercompanion_jetpackcompose.R
 import com.saher.android.waterfiltercompanion_jetpackcompose.common.date.DateHelper
+import com.saher.android.waterfiltercompanion_jetpackcompose.datapresistance.DataModel
+import com.saher.android.waterfiltercompanion_jetpackcompose.datapresistance.LocalRespository
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.capacityInputdialog.CapacityInputDialogConfig
+import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.confirmationdialog.ConfirmationDialogConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val dateHelper: DateHelper
+    private val dateHelper: DateHelper,
+    private val localRepository: LocalRespository
 ) : ViewModel() {
 
 
@@ -49,6 +51,7 @@ class MainViewModel @Inject constructor(
 
     //Dialogs
     var capacityInputDialogConfig: CapacityInputDialogConfig? by mutableStateOf(null)
+    var confirmationDialogConfig: ConfirmationDialogConfig? by mutableStateOf(null)
 
     //Derived State
     val installedOnFormatted :String? by derivedStateOf {
@@ -89,13 +92,22 @@ class MainViewModel @Inject constructor(
 
 
     init {
-        loadData()
+        loadDataAsync()
     }
 
-    fun loadData(){ //hardcoded
-        totalCapacity = 200
-        remainingCapacity = 200
-        installedOn = 1625507070085L
+    //loading data from repository
+    private fun loadDataAsync(){
+        viewModelScope.launch {
+            loadDataSync()
+        }
+    }
+
+    private suspend fun loadDataSync(){
+        localRepository.getData().let { dataModel ->
+            totalCapacity = dataModel.totalCapacity
+            remainingCapacity= dataModel.remainingCapacity
+            installedOn= dataModel.installedOn
+        }
     }
 
     fun onEdit(){
@@ -103,17 +115,68 @@ class MainViewModel @Inject constructor(
         editMode = true
     }
     fun onCancel(){
+        leaveEditMode()
+    }
+    private fun leaveEditMode(){
         editMode = false
         clearCandidateValues()
     }
 
     fun onSave(){
+        //creating a logical check for data instead of value check
+        val tc = totalCapacityCandidate?.toIntOrNull()
+        val rc = remainingCapacityCandidate?.toIntOrNull()
+        val io = installedOnCandidate
+        if (tc == null ||
+            rc == null ||
+            io == null ||
+            io > System.currentTimeMillis() ||
+            !areCapacityValuesValid(tc, rc)) return //TODO add message
 
+//        if (totalCapacityCandidate.isNullOrEmpty()||
+//                    remainingCapacityCandidate.isNullOrEmpty() ||
+//                    installedOnCandidate == null){
+//            return
+//        }
+        //saving data using coroutines
+        viewModelScope.launch {
+              val dataModel = DataModel(
+                  totalCapacity = totalCapacityCandidate?.toIntOrNull(),
+                  remainingCapacity = remainingCapacityCandidate?.toIntOrNull(),
+                  installedOn = installedOnCandidate
+              )
+              localRepository.setData(dataModel)
+              loadDataSync()
+              leaveEditMode()
+          }
     }
 
+    //Clearing data functionality
     fun onClearData(){
-
+        confirmationDialogConfig = ConfirmationDialogConfig(
+            titleStringRes = R.string.clear_data_confirmation_dialog_title,
+            onConfirm = ::onClearDataConfirm,
+            onCancel = ::onClearDataCancel
+        )
     }
+
+    private fun onClearDataCancel(){
+        //on cancel clicked -> close the dialog
+        confirmationDialogConfig = null
+    }
+
+    private fun onClearDataConfirm(){
+        //Repository function to clear data
+        viewModelScope.launch {
+            localRepository.clearData()
+            loadDataSync()
+            confirmationDialogConfig = null
+            leaveEditMode()
+            //TODO add a message
+        }
+    }
+
+
 
     //Click Methods
     fun onTotalCapacityClick(){
