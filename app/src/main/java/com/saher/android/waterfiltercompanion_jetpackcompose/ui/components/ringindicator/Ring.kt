@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -31,14 +33,36 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
 
-private val bgStrokeWithDp: Dp = 8.dp
-private val fgStrokeWithDp: Dp = 12.dp
-private const val TAG = "Ring"
-
 /**
  * for more info about graphics: https://developer.android.com/jetpack/compose/graphics
  * for more info about animation: https://developer.android.com/jetpack/compose/animation
  */
+
+private val bgStrokeWithDp: Dp = 8.dp
+private val fgStrokeWithDp: Dp = 12.dp
+private const val TAG = "Ring"
+
+
+/**
+ * Creating a key location to save the animation status
+ * at the first creation. since without it, it is saved
+ * after the second rotation.
+ */
+private const val KEY_TRANSITION_SAVEABLE = "key-transition-saveable"
+
+
+//Creating a saver to serialize the transition state across rotation --> https://developer.android.com/jetpack/compose/state#restore-ui-state
+private val transitionStateSaver =
+    //here we provide the methods to save & restore the TransitionState
+    listSaver<MutableTransitionState<TransitionState>, TransitionState>(
+        save = {
+            listOf(it.currentState)
+        },
+        restore = {
+            MutableTransitionState(it[0])
+        }
+    )
+
 
 @Composable
 fun Ring(
@@ -118,9 +142,10 @@ fun Ring(
     /**
      * We are creating a [transitionState] value to apply animations, using [TransitionState] enum class
      */
-    val transitionState = remember {
-        MutableTransitionState(TransitionState.INIT_START)
-    }
+    val transitionState =
+        rememberSaveable(saver = transitionStateSaver, key = KEY_TRANSITION_SAVEABLE) {
+            MutableTransitionState(TransitionState.INIT_START)
+        }
 
     /**
      * We will create the transition itself by using [updateTransition] to call
@@ -161,18 +186,18 @@ fun Ring(
      * Creating an animation for the stats text on start as the with the ring
      */
 
-    val fgFill by transition.animateFloat (
+    val fgFill by transition.animateFloat(
         transitionSpec = {
             tween(400)
         },
         label = "fgFill"
-            ){currentState ->
+    ) { currentState ->
         if (currentState == TransitionState.FILLED) fill else 0f
     }
     /**
      * We will use this [LaunchedEffect] to send the value of the [fgFillCb]
      */
-    LaunchedEffect(fgFill){
+    LaunchedEffect(fgFill) {
         fgFillCb?.invoke(fgFill)
     }
 
@@ -278,7 +303,8 @@ private fun DrawScope.drawRing(
 fun previewRing() {
     Ring(
         modifier = Modifier.size(300.dp),
-        fill =0.8f,
-        bgColor =Color.DarkGray,
-        fgColor = Color.Cyan)
+        fill = 0.8f,
+        bgColor = Color.DarkGray,
+        fgColor = Color.Cyan
+    )
 }

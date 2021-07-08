@@ -131,7 +131,7 @@ class MainViewModel @Inject constructor(
     fun onCancel(){
         leaveEditMode()
     }
-    private fun leaveEditMode(){
+     fun leaveEditMode(){
         editMode = false
         clearCandidateValues()
     }

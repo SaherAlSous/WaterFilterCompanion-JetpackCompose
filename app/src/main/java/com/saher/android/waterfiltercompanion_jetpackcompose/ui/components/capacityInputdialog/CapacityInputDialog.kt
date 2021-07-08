@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,8 +30,12 @@ fun CapacityInputDialog(
 ) {
     if (config == null) return
 
-    //saving the input value --> we added getting and setting in the import to remove the error.
-    var input by remember {
+    /**
+     * saving the input value --> we added getting and setting in the import to remove the error.
+     * To save the dialog value during configuration change/rotation
+     * we changed the function [remember] to[rememberSaveable]
+     */
+    var input by rememberSaveable {
         mutableStateOf(config.initialInput?: "")
     }
 

@@ -62,6 +62,15 @@ class MainActivity : ComponentActivity() {
         eventJob?.cancel()
         eventJob = null
     }
+
+    //We want to leave edit mode when user press device back button
+    override fun onBackPressed() {
+        if (viewModel.editMode) {
+            viewModel.leaveEditMode()
+        }else {
+            super.onBackPressed()
+        }
+    }
 }
 
 /**

@@ -1,9 +1,12 @@
 package com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.detailscard.content
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saher.android.waterfiltercompanion_jetpackcompose.R
@@ -32,30 +35,12 @@ fun DetailsContent(
     //Editmode Boolean
     editMode: Boolean
 ) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .height(
-                IntrinsicSize.Min
-                /**
-                 * we want to keep the height of the [Row] to the
-                 * Minimum, instead of going till the end of the screen
-                 */
-                /**
-                 * we want to keep the height of the [Row] to the
-                 * Minimum, instead of going till the end of the screen
-                 */
-            )
-    ) {
-        /**
-         * since we have three identical columns, we extracted them into
-         * [DetailsContentItem] and added the needed details.
-         */
-        /**
-         * since we have three identical columns, we extracted them into
-         * [DetailsContentItem] and added the needed details.
-         */
-        val boxModifier = Modifier.weight(1f) // to align them equally inside the [Row]
+
+    /**
+     * We created these functions to adjust the structure of the details card on rotation
+     */
+    @Composable
+    fun Total(boxModifier: Modifier = Modifier) {
         DetailsContentItem(
             value = stringResourceWithFallback(R.string.details_card_total_format, totalCapacity?.toString()),//<-- We are using the null check function
             candidateValue = stringResourceWithFallback(R.string.details_card_total_format,totalCapacityCandidate),
@@ -64,12 +49,10 @@ fun DetailsContent(
             onClick = onTotalCapacityClick,
             editmode = editMode
         )
+    }
 
-        Divider(
-            Modifier
-                .fillMaxHeight()
-                .width(1.dp))
-
+    @Composable
+    fun Remaining(boxModifier: Modifier = Modifier) {
         DetailsContentItem(
             value = stringResourceWithFallback(R.string.details_card_remaining_format, remainingCapacity?.toString()), //<-- We are using the null check function
             candidateValue = stringResourceWithFallback(R.string.details_card_remaining_format,remainingCapacityCandidate),
@@ -78,12 +61,10 @@ fun DetailsContent(
             onClick = onRemainingCapacityClick,
             editmode = editMode
         )
+    }
 
-        Divider(
-            Modifier
-                .fillMaxHeight()
-                .width(1.dp))
-
+    @Composable
+    fun InstalledOn(boxModifier: Modifier = Modifier) {
         DetailsContentItem(
             value = stringwithFallback(installOnFormatted) ,//<-- We are using the null check function
             candidateValue = stringwithFallback(installedOnCandidateFormatted),
@@ -93,4 +74,79 @@ fun DetailsContent(
             editmode = editMode
         )
     }
+
+    @Composable
+    fun defaultLayout(modifier: Modifier = Modifier) {
+        Row( // Portrait Mode
+            modifier
+                .fillMaxWidth()
+                .height(
+                    IntrinsicSize.Min
+                    /**
+                     * we want to keep the height of the [Row] to the
+                     * Minimum, instead of going till the end of the screen
+                     */
+                    /**
+                     * we want to keep the height of the [Row] to the
+                     * Minimum, instead of going till the end of the screen
+                     */
+                )
+        ) {
+            /**
+             * since we have three identical columns, we extracted them into
+             * [DetailsContentItem] and added the needed details.
+             */
+            /**
+             * since we have three identical columns, we extracted them into
+             * [DetailsContentItem] and added the needed details.
+             */
+            val boxModifier = Modifier.weight(1f) // to align them equally inside the [Row]
+
+            Total(boxModifier)
+
+            verticalDivider()
+
+            Remaining(boxModifier)
+
+            verticalDivider()
+
+            InstalledOn(boxModifier)
+
+        }
+    }
+    @Composable
+    fun landscapeLayout(modifier: Modifier = Modifier){
+        Column(modifier) {
+            val boxModifier = Modifier.weight(1f) // to align them equally inside the [Row]
+            Row(modifier
+                .height(
+                    IntrinsicSize.Min)
+            ) {
+                Total(boxModifier)
+
+                verticalDivider()
+
+                Remaining(boxModifier)
+
+            }
+            InstalledOn(Modifier.align(Alignment.CenterHorizontally))
+        }
+    }
+
+    //getting an instance of the local configuration
+    val configuration = LocalConfiguration.current
+    when(
+        configuration.orientation
+    ){
+        Configuration.ORIENTATION_LANDSCAPE -> landscapeLayout(modifier)
+        else -> defaultLayout(modifier)
+    }
+}
+
+@Composable
+fun verticalDivider() {
+    Divider(
+        Modifier
+            .fillMaxHeight()
+            .width(1.dp))
 }
