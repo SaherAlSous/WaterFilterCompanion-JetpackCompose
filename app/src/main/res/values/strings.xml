@@ -43,6 +43,10 @@
     <string name="message_data_saved">Data Saved</string>
     <string name="message_data_cleared">Data Cleared</string>
     <string name="message_invalid_input">Invalid Input</string>
+    <string name="message_consumed">Consumed %d L</string>
+
+    <!-- Consume Water Fab -->
+    <string name="consume_water">Consume Water</string>
 
 
 </resources>

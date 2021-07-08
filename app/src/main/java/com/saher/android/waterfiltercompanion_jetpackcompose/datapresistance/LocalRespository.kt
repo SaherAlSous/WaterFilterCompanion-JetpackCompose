@@ -55,6 +55,22 @@ class LocalRespository(
         }
     }
 
+    //When the use consume water, we want to set the new capacity
+    suspend fun setRemainingCapacity(remainingCapacity: Int){
+        withContext(Dispatchers.IO){
+            sharedPreferences.edit()
+                .putInt(PREF_REMAINED_CAPACITY, remainingCapacity)
+                .commit() //We use commit not apply because we are in Coroutine.
+        }
+    }
+
+    //after updating the remaining capacity above, we want to update the UI
+    suspend fun getRemainingCapacity(): Int?{
+        return withContext(Dispatchers.IO){
+            getIntOrNull(PREF_REMAINED_CAPACITY)
+        }
+    }
+
 
     companion object{
         const val PREF_TOTAL_CAPACITY = "total_capacity"

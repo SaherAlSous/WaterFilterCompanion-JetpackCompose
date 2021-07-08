@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import com.saher.android.waterfiltercompanion_jetpackcompose.common.date.DateHelper
 import com.saher.android.waterfiltercompanion_jetpackcompose.common.dependencyinjection.DiConstants
 import com.saher.android.waterfiltercompanion_jetpackcompose.datapresistance.LocalRespository
+import com.saher.android.waterfiltercompanion_jetpackcompose.watercontrol.ConsumeWaterUseCase
 import dagger.Reusable
 import javax.inject.Named
 import javax.inject.Singleton
@@ -38,5 +39,11 @@ class ApplicationModule {
     fun provideLocalRepository(
         sharedPreferences: SharedPreferences
     ): LocalRespository= LocalRespository(sharedPreferences)
+
+    @Provides
+    @Reusable
+    fun provideConsumeWaterUseCase(
+        localRespository: LocalRespository
+    ): ConsumeWaterUseCase = ConsumeWaterUseCase(localRespository)
 
 }

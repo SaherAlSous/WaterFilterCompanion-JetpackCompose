@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 data class InfoBarMessage(
     val type: InfoBarType,
     @StringRes val textStringRes: Int,
+    val args: List<Any>? = null, // allowing the message string to have arguments.
     val displayTimeSeconds: Long = 3L,
     /**
      * this will make every message into the Info Bar Unique and

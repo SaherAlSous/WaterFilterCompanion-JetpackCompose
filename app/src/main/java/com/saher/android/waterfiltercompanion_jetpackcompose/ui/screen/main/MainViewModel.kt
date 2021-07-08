@@ -14,6 +14,7 @@ import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.capac
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.confirmationdialog.ConfirmationDialogConfig
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.infobar.InfoBarMessage
 import com.saher.android.waterfiltercompanion_jetpackcompose.ui.components.infobar.InfoBarType
+import com.saher.android.waterfiltercompanion_jetpackcompose.watercontrol.ConsumeWaterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val dateHelper: DateHelper,
-    private val localRepository: LocalRespository
+    private val localRepository: LocalRespository,
+    private val consumeWaterUseCase: ConsumeWaterUseCase
 ) : ViewModel() {
 
 
@@ -87,6 +89,13 @@ class MainViewModel @Inject constructor(
         }else{
             0f
         }
+    }
+    //We want to show the icon all the time except
+    // while we are in edit mode and remaining capacity is Zero.
+    val consumeFabVisible: Boolean by derivedStateOf {
+        !editMode && remainingCapacity?.let {
+            it >= ConsumeWaterUseCase.UNITS_TO_CONSUME
+        } ?: false
     }
 
     //Events channel to interact with Time picker Dialog through the sealed class EVENT
@@ -238,6 +247,22 @@ class MainViewModel @Inject constructor(
     //Hiding the InfoBar
     fun onInfoBarMessageTimeout(){
         infoBarMessage = null
+    }
+
+    //Implementing onConsume floating button
+    fun onConsume(){
+        viewModelScope.launch {
+            consumeWaterUseCase(currentCapacity = remainingCapacity)
+            //We want to reload the remaining capacity after updating it
+            remainingCapacity = localRepository.getRemainingCapacity()
+            //after loading the remaning capacity we want to create an info Bar msg
+            infoBarMessage = InfoBarMessage(
+                type = InfoBarType.INFO,
+                textStringRes = R.string.message_consumed,
+                args = listOf(ConsumeWaterUseCase.UNITS_TO_CONSUME)
+                //he is using a list to accumulate the number of liters consumed
+            )
+        }
     }
 
     //Syncing and clearing values

@@ -90,7 +90,7 @@ fun InfoBar(
                         horizontal = 8.dp,
                         vertical = 4.dp
                     ) ,
-                    text = stringResource(message.textStringRes),
+                    text = stringResourceForMessage(message),
                     color = message.type.fgColor,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -100,10 +100,6 @@ fun InfoBar(
             }
         }
     }
-
-
-
-
 }
 
 //Hiding the InfoBar function
@@ -128,4 +124,20 @@ private suspend fun showMessage(
     isShown.value =false
 
     onMessageTimeOut()
+}
+
+/**
+ * this function to allow the message displayed in the info bar to display arguments
+ * when the app wants to display a message for the user with numbers of liters
+ * consumed.
+ */
+@Composable
+private fun stringResourceForMessage(message: InfoBarMessage):String{
+    return message.args?.let {
+        stringResource(message.textStringRes, *message.args.toTypedArray())
+        /**
+         * we have a list, so we convert it to typed array. and we call the spread argument (*)
+         * this way it can fill up the variable argument
+         */
+    }?: stringResource(message.textStringRes)
 }
