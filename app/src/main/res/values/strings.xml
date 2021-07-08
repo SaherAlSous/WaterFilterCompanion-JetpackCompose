@@ -39,5 +39,10 @@
     <!-- Clear Data Confirmation -->
     <string name="clear_data_confirmation_dialog_title">Clear Data?</string>
 
+    <!-- Info Bar Message -->
+    <string name="message_data_saved">Data Saved</string>
+    <string name="message_data_cleared">Data Cleared</string>
+    <string name="message_invalid_input">Invalid Input</string>
+
 
 </resources>
